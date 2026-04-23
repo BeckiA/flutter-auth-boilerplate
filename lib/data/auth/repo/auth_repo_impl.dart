@@ -91,4 +91,15 @@ class AuthRepoImpl implements AuthRepo {
       return Left(message);
     }
   }
+
+  @override
+  Future<Either<String, Unit>> verifyEmail(String code) async {
+    try {
+      await authDataSource.applyActionCode(code);
+      return const Right(unit);
+    } catch (e, stackTrace) {
+      final message = handleError(e, stackTrace);
+      return Left(message);
+    }
+  }
 }

@@ -7,12 +7,13 @@ FutureOr<String?> handleRedirect(
   final isSignup = matchedLocation == "/sign-up";
   final isSplashScreen = matchedLocation == "/splash-screen";
   final isOnboarding = matchedLocation == "/onboarding";
+  final isAuthAction = matchedLocation.startsWith("/__/auth/");
 
-  final isPublicPage = isSignup || isSignin || isOnboarding || isSplashScreen;
+  final isPublicPage = isSignup || isSignin || isOnboarding || isSplashScreen || isAuthAction;
 
   // check if the user has seen the onboarding screen
   final hasSeenOnboarding = _hasSeenOnboarding(ref);
-  if (!hasSeenOnboarding && !isOnboarding && !isSplashScreen) {
+  if (!hasSeenOnboarding && !isOnboarding && !isSplashScreen && !isAuthAction) {
     return "/onboarding";
   }
 
@@ -54,6 +55,9 @@ FutureOr<String?> handleRedirect(
 
   // If authenticated and trying to access a public page, redirect to home
   if (isAuthenticated && isPublicPage) {
+    // Allow users to finish onboarding or process auth deep links even if they are already authenticated
+    if ((isOnboarding && !hasSeenOnboarding) || isAuthAction) return null;
+    
     if (!isEmailVerified) return "/email-verification";
     return "/home";
   }

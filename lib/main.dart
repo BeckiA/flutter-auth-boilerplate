@@ -1,5 +1,4 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_auth_boilerplate/core/constants/constants.dart';
 import 'package:flutter_auth_boilerplate/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,14 +11,12 @@ import 'presentation/onboarding/controllers/onboarding/onboarding_provider.dart'
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final sh = await SharedPreferences.getInstance();
-  final hasSeenOnboarding = sh.get(hasOnboardingInitialized) as bool?;
   await _initializeFirebase();
   await GoogleSignIn.instance.initialize();
   runApp(
     ProviderScope(
       overrides: [
-        hasSeenOnboardingProvider
-            .overrideWith((ref) => hasSeenOnboarding ?? false)
+        sharedPreferencesProvider.overrideWithValue(sh),
       ],
       child: const MyApp(),
     ),

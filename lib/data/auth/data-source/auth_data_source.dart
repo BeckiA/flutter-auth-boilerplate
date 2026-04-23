@@ -22,4 +22,5 @@ abstract class AuthDataSource {
   Future<User> getSignedInUser();
   Future<void> sendEmailVerification();
   Future<User?> reloadUser();
+  Future<void> applyActionCode(String code);
 }

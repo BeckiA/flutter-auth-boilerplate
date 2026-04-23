@@ -1,15 +1,15 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_auth_boilerplate/presentation/onboarding/controllers/onboarding/onboarding_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:flutter_auth_boilerplate/core/configs/router-configs/route_names.dart';
-import 'package:flutter_auth_boilerplate/core/constants/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends ConsumerWidget {
   const OnboardingScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return IntroductionScreen(
       pages: [
         PageViewModel(
@@ -31,26 +31,14 @@ class OnboardingScreen extends StatelessWidget {
       showNextButton: true,
       next: const Text('Next'),
       done: const Text('Get Started'),
-      onDone: () => _onDone(context),
+      onDone: () => _onDone(context, ref),
     );
   }
 
-  void _onDone(BuildContext context) async {
-    await _changeOnboardingIntialStatus();
+  void _onDone(BuildContext context, WidgetRef ref) async {
+    await ref.read(hasSeenOnboardingProvider.notifier).setHasSeenOnboarding();
     if (context.mounted) {
       context.goNamed(RouteNames.home);
     }
-    // Navigator.of(context).pushReplacement(
-    //   MaterialPageRoute(builder: (_) => const WorkoutListScreen()),
-    // );
-
-    // Navigator.of(context).pushReplacement(
-    //   MaterialPageRoute(builder: (_) => const WorkoutListScreen()),
-    // );
-  }
-
-  Future<void> _changeOnboardingIntialStatus() async {
-    final sh = await SharedPreferences.getInstance();
-    sh.setBool(hasOnboardingInitialized, true);
   }
 }

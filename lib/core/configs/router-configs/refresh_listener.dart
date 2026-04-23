@@ -18,6 +18,12 @@ class RouterRefreshNotifier extends ChangeNotifier {
         if (previous != next) notifyListeners();
       },
     );
+    ref.listen(
+      hasSeenOnboardingProvider,
+      (previous, next) {
+        if (previous != next) notifyListeners();
+      },
+    );
   }
 }
 

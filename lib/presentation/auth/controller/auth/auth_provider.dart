@@ -75,4 +75,13 @@ class AuthNotifier extends _$AuthNotifier {
       },
     );
   }
+
+  Future<void> verifyEmailLink(String code) async {
+    state = const AuthState.gettingSignedInUser();
+    final result = await _authRepo.verifyEmail(code);
+    await result.fold(
+      (error) async => state = AuthState.errorSigningIn(error),
+      (_) async => await getCurrentUser(),
+    );
+  }
 }

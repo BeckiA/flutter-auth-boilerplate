@@ -129,8 +129,15 @@ class FirebaseAuthDataSource implements AuthDataSource {
       final firebaseAuthUser = cred.user;
       if (firebaseAuthUser != null) {
         debugPrint('FirebaseAuthDataSource.signUp: User created with UID: ${firebaseAuthUser.uid}');
-        debugPrint('FirebaseAuthDataSource.signUp: Sending verification email...');
-        await firebaseAuthUser.sendEmailVerification();
+        debugPrint('FirebaseAuthDataSource.signUp: Sending verification email with deep link...');
+        final ActionCodeSettings actionCodeSettings = ActionCodeSettings(
+          url: 'https://flutter-auth-boilerplate-c25e8.firebaseapp.com/__/auth/action',
+          handleCodeInApp: true,
+          androidPackageName: 'com.flutter_auth_boilerplate',
+          androidInstallApp: true,
+          androidMinimumVersion: '1',
+        );
+        await firebaseAuthUser.sendEmailVerification(actionCodeSettings);
         debugPrint('FirebaseAuthDataSource.signUp: Verification email sent successfully.');
         
         final userId = firebaseAuthUser.uid;
@@ -152,7 +159,24 @@ class FirebaseAuthDataSource implements AuthDataSource {
   @override
   Future<void> sendEmailVerification() async {
     try {
-      await _firebaseAuth.currentUser?.sendEmailVerification();
+      final ActionCodeSettings actionCodeSettings = ActionCodeSettings(
+        url: 'https://flutter-auth-boilerplate-c25e8.firebaseapp.com/__/auth/action',
+        handleCodeInApp: true,
+        androidPackageName: 'com.flutter_auth_boilerplate',
+        androidInstallApp: true,
+        androidMinimumVersion: '1',
+      );
+      await _firebaseAuth.currentUser?.sendEmailVerification(actionCodeSettings);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> applyActionCode(String code) async {
+    try {
+      await _firebaseAuth.checkActionCode(code);
+      await _firebaseAuth.applyActionCode(code);
     } catch (e) {
       rethrow;
     }

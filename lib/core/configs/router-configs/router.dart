@@ -60,6 +60,29 @@ final routeProvider = Provider((ref) {
             name: RouteNames.emailVerification,
             path: "/email-verification",
             builder: (context, state) => const EmailVerificationScreen()),
+        GoRoute(
+            path: "/__/auth/action",
+            builder: (context, state) {
+              final code = state.uri.queryParameters['oobCode'];
+              final mode = state.uri.queryParameters['mode'];
+
+              if (code != null && mode == 'verifyEmail') {
+                // Return a simple loading screen while we verify
+                return Builder(builder: (context) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    ref.read(authNotifierProvider.notifier).verifyEmailLink(code);
+                  });
+                  return const Scaffold(
+                    body: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                });
+              }
+              return const Scaffold(
+                body: Center(child: Text("Invalid verification link")),
+              );
+            }),
       ]);
 });
 
