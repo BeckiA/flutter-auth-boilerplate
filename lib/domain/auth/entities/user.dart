@@ -7,6 +7,8 @@ class User extends Equatable {
   final String? password;
   final String? bio;
   final bool isAuthenticated;
+  final bool isEmailVerified;
+
   const User({
     this.id,
     this.name,
@@ -14,8 +16,30 @@ class User extends Equatable {
     this.bio,
     this.password,
     this.isAuthenticated = false,
+    this.isEmailVerified = false,
   });
 
+  User copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? password,
+    String? bio,
+    bool? isAuthenticated,
+    bool? isEmailVerified,
+  }) {
+    return User(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      email: email ?? this.email,
+      password: password ?? this.password,
+      bio: bio ?? this.bio,
+      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+    );
+  }
+
   @override
-  List<Object?> get props => [id, name, email, bio, isAuthenticated, password];
+  List<Object?> get props =>
+      [id, name, email, bio, isAuthenticated, password, isEmailVerified];
 }

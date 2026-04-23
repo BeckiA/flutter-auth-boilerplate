@@ -9,6 +9,7 @@ class FirebaseUser extends User {
     String? password,
     String? bio,
     bool isAuthenticated = false,
+    bool isEmailVerified = false,
   }) : super(
           id: id,
           name: name,
@@ -16,6 +17,7 @@ class FirebaseUser extends User {
           password: password,
           bio: bio,
           isAuthenticated: isAuthenticated,
+          isEmailVerified: isEmailVerified,
         );
 
   factory FirebaseUser.fromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
@@ -45,6 +47,28 @@ class FirebaseUser extends User {
       password: user.password,
       bio: user.bio,
       isAuthenticated: user.isAuthenticated,
+      isEmailVerified: user.isEmailVerified,
+    );
+  }
+
+  @override
+  FirebaseUser copyWith({
+    String? id,
+    String? name,
+    String? email,
+    String? password,
+    String? bio,
+    bool? isAuthenticated,
+    bool? isEmailVerified,
+  }) {
+    return FirebaseUser(
+      id: id ?? this.id ?? "",
+      name: name ?? this.name ?? "",
+      email: email ?? this.email ?? "",
+      password: password ?? this.password,
+      bio: bio ?? this.bio,
+      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
     );
   }
 }

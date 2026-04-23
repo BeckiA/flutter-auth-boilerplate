@@ -27,12 +27,15 @@ class UserModel extends User {
   }
 
 // copy with
+  @override
   UserModel copyWith({
     String? id,
     String? name,
     String? email,
     String? bio,
     String? password,
+    bool? isAuthenticated,
+    bool? isEmailVerified,
   }) {
     return UserModel(
         id: id ?? super.id,

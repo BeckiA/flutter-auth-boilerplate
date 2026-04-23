@@ -18,25 +18,43 @@ FutureOr<String?> handleRedirect(
 
   // check if the user is logged in or not
   final authState = ref.read(authNotifierProvider);
-  final isAuthenticated = authState.maybeMap(
-    success: (_) => true,
-    orElse: () => false,
+  final user = authState.maybeMap(
+    success: (state) => state.user,
+    orElse: () => null,
   );
+  final isAuthenticated = user != null;
+  final isEmailVerified = user?.isEmailVerified ?? false;
   final isCheckingUser = authState.maybeMap(
     gettingSignedInUser: (_) => true,
     orElse: () => false,
   );
 
+  final isEmailVerificationPage = state.matchedLocation == "/email-verification";
+
   // Special handling for Splash Screen
   if (isSplashScreen) {
     if (isCheckingUser) return null;
-    if (isAuthenticated) return "/home";
+    if (isAuthenticated) {
+      if (!isEmailVerified) return "/email-verification";
+      return "/home";
+    }
     if (!hasSeenOnboarding) return "/onboarding";
     return "/sign-in";
   }
 
+  // If authenticated but not verified, force to verification page
+  if (isAuthenticated && !isEmailVerified && !isEmailVerificationPage && !isPublicPage) {
+    return "/email-verification";
+  }
+
+  // If authenticated and verified, and on verification page, go home
+  if (isAuthenticated && isEmailVerified && isEmailVerificationPage) {
+    return "/home";
+  }
+
   // If authenticated and trying to access a public page, redirect to home
   if (isAuthenticated && isPublicPage) {
+    if (!isEmailVerified) return "/email-verification";
     return "/home";
   }
 

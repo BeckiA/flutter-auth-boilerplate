@@ -69,4 +69,26 @@ class AuthRepoImpl implements AuthRepo {
       return Left(message);
     }
   }
+
+  @override
+  Future<Either<String, Unit>> sendEmailVerification() async {
+    try {
+      await authDataSource.sendEmailVerification();
+      return const Right(unit);
+    } catch (e, stackTrace) {
+      final message = handleError(e, stackTrace);
+      return Left(message);
+    }
+  }
+
+  @override
+  Future<Either<String, User?>> reloadUser() async {
+    try {
+      final user = await authDataSource.reloadUser();
+      return Right(user);
+    } catch (e, stackTrace) {
+      final message = handleError(e, stackTrace);
+      return Left(message);
+    }
+  }
 }

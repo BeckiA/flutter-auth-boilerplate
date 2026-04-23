@@ -19,4 +19,6 @@ abstract class AuthRepo {
   Future<Either<String, User>> signUp(User user);
   Future<Either<String, Unit>> signOut();
   Future<Either<String, User>> getSignedInUser();
+  Future<Either<String, Unit>> sendEmailVerification();
+  Future<Either<String, User?>> reloadUser();
 }

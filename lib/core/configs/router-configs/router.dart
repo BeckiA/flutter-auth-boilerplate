@@ -5,6 +5,7 @@ import 'package:flutter_auth_boilerplate/presentation/auth/screens/home_screen.d
 import 'package:flutter_auth_boilerplate/presentation/auth/screens/sign_in_screen.dart';
 import 'package:flutter_auth_boilerplate/presentation/auth/screens/sign_up_screen.dart';
 import 'package:flutter_auth_boilerplate/presentation/onboarding/screens/onboarding_screen.dart';
+import 'package:flutter_auth_boilerplate/presentation/auth/screens/email_verification_screen.dart';
 import 'package:flutter_auth_boilerplate/presentation/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,6 +56,10 @@ final routeProvider = Provider((ref) {
             name: RouteNames.home,
             path: "/home",
             builder: (context, state) => const HomeScreen()),
+        GoRoute(
+            name: RouteNames.emailVerification,
+            path: "/email-verification",
+            builder: (context, state) => const EmailVerificationScreen()),
       ]);
 });
 

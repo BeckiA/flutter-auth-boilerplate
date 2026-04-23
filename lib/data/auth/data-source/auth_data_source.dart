@@ -20,4 +20,6 @@ abstract class AuthDataSource {
   Future<void> signUp(User user);
   Future<void> signOut();
   Future<User> getSignedInUser();
+  Future<void> sendEmailVerification();
+  Future<User?> reloadUser();
 }

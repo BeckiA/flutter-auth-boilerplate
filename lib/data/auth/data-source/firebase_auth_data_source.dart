@@ -29,8 +29,10 @@ class FirebaseAuthDataSource implements AuthDataSource {
       if (!userDoc.exists) {
         throw Exception('User not found');
       }
-      final firebaseUser = FirebaseUser.fromDoc(userDoc);
-      return firebaseUser;
+      final firebaseUser = FirebaseUser.fromDoc(userDoc).copyWith(
+        isEmailVerified: user.emailVerified,
+      );
+      return firebaseUser as FirebaseUser;
     } catch (e) {
       rethrow;
     }
@@ -61,7 +63,7 @@ class FirebaseAuthDataSource implements AuthDataSource {
   Future<void> signInWithGoogle() async {
     try {
       debugPrint('FirebaseAuthDataSource.signInWithGoogle: Starting');
-      
+
       // In google_sign_in 7.x, authenticate() is the recommended way for identity
       final gsis.GoogleSignInAccount? googleUser =
           await gsis.GoogleSignIn.instance.authenticate();
@@ -118,18 +120,53 @@ class FirebaseAuthDataSource implements AuthDataSource {
   @override
   Future<void> signUp(User user) async {
     try {
+      debugPrint('FirebaseAuthDataSource.signUp: Starting sign up for ${user.email}');
       final firebaseUser = FirebaseUser.fromEntity(user);
       // create a user on firebase-auth.
       final cred = await _firebaseAuth.createUserWithEmailAndPassword(
           email: firebaseUser.email!, password: firebaseUser.password!);
-      if (cred.user == null) {
-        throw Exception('User not created');
+      
+      final firebaseAuthUser = cred.user;
+      if (firebaseAuthUser != null) {
+        debugPrint('FirebaseAuthDataSource.signUp: User created with UID: ${firebaseAuthUser.uid}');
+        debugPrint('FirebaseAuthDataSource.signUp: Sending verification email...');
+        await firebaseAuthUser.sendEmailVerification();
+        debugPrint('FirebaseAuthDataSource.signUp: Verification email sent successfully.');
+        
+        final userId = firebaseAuthUser.uid;
+        // save user to firestore.
+        await _firebaseFirestore.userDocument(userId).set(
+              firebaseUser.toDoc(),
+            );
+        debugPrint('FirebaseAuthDataSource.signUp: User document saved to Firestore.');
+      } else {
+        throw Exception('User creation failed: Firebase returned null user.');
       }
-      final userId = cred.user?.uid;
-      // save user to firestore.
-      await _firebaseFirestore.userDocument(userId).set(
-            firebaseUser.toDoc(),
-          );
+    } catch (e, stackTrace) {
+      debugPrint('FirebaseAuthDataSource.signUp error: $e');
+      debugPrint('FirebaseAuthDataSource.signUp stackTrace: $stackTrace');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> sendEmailVerification() async {
+    try {
+      await _firebaseAuth.currentUser?.sendEmailVerification();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<User?> reloadUser() async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user != null) {
+        await user.reload();
+        return await getSignedInUser();
+      }
+      return null;
     } catch (e) {
       rethrow;
     }
