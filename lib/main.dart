@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'core/configs/router-configs/router.dart';
+import 'core/services/deep_link_service.dart';
 import 'presentation/onboarding/controllers/onboarding/onboarding_provider.dart';
 
 void main() async {
@@ -32,6 +33,9 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Initialize DeepLinkService to listen for incoming links
+    ref.listen(deepLinkServiceProvider, (_, __) {});
+
     final router = ref.watch(routeProvider);
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,

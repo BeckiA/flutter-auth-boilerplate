@@ -120,32 +120,37 @@ class FirebaseAuthDataSource implements AuthDataSource {
   @override
   Future<void> signUp(User user) async {
     try {
-      debugPrint('FirebaseAuthDataSource.signUp: Starting sign up for ${user.email}');
+      debugPrint(
+          'FirebaseAuthDataSource.signUp: Starting sign up for ${user.email}');
       final firebaseUser = FirebaseUser.fromEntity(user);
       // create a user on firebase-auth.
       final cred = await _firebaseAuth.createUserWithEmailAndPassword(
           email: firebaseUser.email!, password: firebaseUser.password!);
-      
+
       final firebaseAuthUser = cred.user;
       if (firebaseAuthUser != null) {
-        debugPrint('FirebaseAuthDataSource.signUp: User created with UID: ${firebaseAuthUser.uid}');
-        debugPrint('FirebaseAuthDataSource.signUp: Sending verification email with deep link...');
+        debugPrint(
+            'FirebaseAuthDataSource.signUp: User created with UID: ${firebaseAuthUser.uid}');
+        debugPrint(
+            'FirebaseAuthDataSource.signUp: Sending verification email with deep link...');
         final ActionCodeSettings actionCodeSettings = ActionCodeSettings(
-          url: 'https://flutter-auth-boilerplate-c25e8.firebaseapp.com/__/auth/action',
+          url: 'https://flutter-auth-boilerplate-c25e8.firebaseapp.com',
           handleCodeInApp: true,
           androidPackageName: 'com.flutter_auth_boilerplate',
           androidInstallApp: true,
           androidMinimumVersion: '1',
         );
         await firebaseAuthUser.sendEmailVerification(actionCodeSettings);
-        debugPrint('FirebaseAuthDataSource.signUp: Verification email sent successfully.');
-        
+        debugPrint(
+            'FirebaseAuthDataSource.signUp: Verification email sent successfully.');
+
         final userId = firebaseAuthUser.uid;
         // save user to firestore.
         await _firebaseFirestore.userDocument(userId).set(
               firebaseUser.toDoc(),
             );
-        debugPrint('FirebaseAuthDataSource.signUp: User document saved to Firestore.');
+        debugPrint(
+            'FirebaseAuthDataSource.signUp: User document saved to Firestore.');
       } else {
         throw Exception('User creation failed: Firebase returned null user.');
       }
@@ -160,13 +165,15 @@ class FirebaseAuthDataSource implements AuthDataSource {
   Future<void> sendEmailVerification() async {
     try {
       final ActionCodeSettings actionCodeSettings = ActionCodeSettings(
-        url: 'https://flutter-auth-boilerplate-c25e8.firebaseapp.com/__/auth/action',
+        url:
+            'https://flutter-auth-boilerplate-c25e8.firebaseapp.com/__/auth/action',
         handleCodeInApp: true,
         androidPackageName: 'com.flutter_auth_boilerplate',
         androidInstallApp: true,
         androidMinimumVersion: '1',
       );
-      await _firebaseAuth.currentUser?.sendEmailVerification(actionCodeSettings);
+      await _firebaseAuth.currentUser
+          ?.sendEmailVerification(actionCodeSettings);
     } catch (e) {
       rethrow;
     }
