@@ -39,3 +39,21 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Sensitive files (Firebase & Keys)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+ios/Firebase/google-services.json
+macos/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
+android/key.properties
+**/*.keystore
+**/*.jks
+.env*
+
+# Flutter/Generated
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Flutter.podspec
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
