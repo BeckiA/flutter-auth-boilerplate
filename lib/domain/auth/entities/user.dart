@@ -6,6 +6,7 @@ class User extends Equatable {
   final String? email;
   final String? password;
   final String? bio;
+  final String? photoUrl;
   final bool isAuthenticated;
   final bool isEmailVerified;
 
@@ -14,6 +15,7 @@ class User extends Equatable {
     this.name,
     this.email,
     this.bio,
+    this.photoUrl,
     this.password,
     this.isAuthenticated = false,
     this.isEmailVerified = false,
@@ -25,6 +27,7 @@ class User extends Equatable {
     String? email,
     String? password,
     String? bio,
+    String? photoUrl,
     bool? isAuthenticated,
     bool? isEmailVerified,
   }) {
@@ -34,6 +37,7 @@ class User extends Equatable {
       email: email ?? this.email,
       password: password ?? this.password,
       bio: bio ?? this.bio,
+      photoUrl: photoUrl ?? this.photoUrl,
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
     );
@@ -41,5 +45,5 @@ class User extends Equatable {
 
   @override
   List<Object?> get props =>
-      [id, name, email, bio, isAuthenticated, password, isEmailVerified];
+      [id, name, email, bio, photoUrl, isAuthenticated, password, isEmailVerified];
 }

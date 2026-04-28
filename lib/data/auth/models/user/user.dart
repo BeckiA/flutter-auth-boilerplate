@@ -6,7 +6,8 @@ class UserModel extends User {
       required super.name,
       required super.email,
       super.password,
-      required super.bio});
+      required super.bio,
+      super.photoUrl});
   // fromJson
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -14,6 +15,7 @@ class UserModel extends User {
       name: json['name'] as String,
       email: json['email'] as String,
       bio: json['bio'] as String,
+      photoUrl: json['photo_url'] as String?,
     );
   }
   // toJson
@@ -23,6 +25,7 @@ class UserModel extends User {
       'name': super.name,
       'email': super.email,
       'bio': super.bio,
+      'photo_url': super.photoUrl,
     };
   }
 
@@ -33,6 +36,7 @@ class UserModel extends User {
     String? name,
     String? email,
     String? bio,
+    String? photoUrl,
     String? password,
     bool? isAuthenticated,
     bool? isEmailVerified,
@@ -42,6 +46,7 @@ class UserModel extends User {
         name: name ?? super.name,
         email: email ?? super.email,
         bio: bio ?? super.bio,
+        photoUrl: photoUrl ?? super.photoUrl,
         password: password ?? super.password);
   }
 
@@ -52,6 +57,7 @@ class UserModel extends User {
       name: user.name,
       email: user.email,
       bio: user.bio,
+      photoUrl: user.photoUrl,
       password: user.password,
     );
   }

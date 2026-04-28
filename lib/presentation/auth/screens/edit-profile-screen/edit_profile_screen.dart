@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_auth_boilerplate/widgets/app_button.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../controller/auth/auth_provider.dart';
 
 class EditProfileScreen extends HookConsumerWidget {
@@ -15,16 +18,31 @@ class EditProfileScreen extends HookConsumerWidget {
     final nameController = useTextEditingController(text: user?.name);
     final bioController = useTextEditingController(text: user?.bio);
     final isLoading = useState(false);
+    final selectedImagePath = useState<String?>(null);
+    final imagePicker = useMemoized(ImagePicker.new);
+
+    Future<void> onPickImage() async {
+      final pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+      if (pickedImage == null) return;
+      selectedImagePath.value = pickedImage.path;
+    }
 
     Future<void> onSave() async {
       if (nameController.text.isEmpty) return;
 
       isLoading.value = true;
       try {
-        await ref.read(authNotifierProvider.notifier).updateProfile(
+        final error = await ref.read(authNotifierProvider.notifier).updateProfile(
               name: nameController.text,
-              bio: bioController.text,
+              bio: bioController.text.trim(),
+              imagePath: selectedImagePath.value,
             );
+        if (error != null && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error)),
+          );
+          return;
+        }
         if (context.mounted) {
           Navigator.pop(context);
         }
@@ -39,6 +57,13 @@ class EditProfileScreen extends HookConsumerWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            _buildAvatar(
+              context,
+              selectedImagePath: selectedImagePath.value,
+              currentPhotoUrl: user?.photoUrl,
+              onPickImage: onPickImage,
+            ),
+            const SizedBox(height: 16),
             _buildNameField(nameController),
             const SizedBox(height: 16),
             _buildBioField(bioController),
@@ -98,6 +123,55 @@ class EditProfileScreen extends HookConsumerWidget {
           onPressed: isLoading.value ? null : onSave,
         ),
       ],
+    );
+  }
+
+  Widget _buildAvatar(
+    BuildContext context, {
+    required String? selectedImagePath,
+    required String? currentPhotoUrl,
+    required Future<void> Function() onPickImage,
+  }) {
+    ImageProvider? imageProvider;
+    if (selectedImagePath != null && selectedImagePath.isNotEmpty) {
+      imageProvider = FileImage(File(selectedImagePath));
+    } else if (currentPhotoUrl != null && currentPhotoUrl.isNotEmpty) {
+      imageProvider = NetworkImage(currentPhotoUrl);
+    }
+
+    return Center(
+      child: Stack(
+        children: [
+          CircleAvatar(
+            radius: 52,
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+            backgroundImage: imageProvider,
+            child: imageProvider == null
+                ? const Icon(Icons.person_outline, size: 46)
+                : null,
+          ),
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Material(
+              color: Theme.of(context).colorScheme.primary,
+              shape: const CircleBorder(),
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap: onPickImage,
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Icon(
+                    Icons.photo_library_outlined,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

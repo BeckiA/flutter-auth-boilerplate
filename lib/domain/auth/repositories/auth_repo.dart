@@ -25,4 +25,6 @@ abstract class AuthRepo {
       String code, String newPassword);
   Future<Either<String, User?>> reloadUser();
   Future<Either<String, Unit>> verifyEmail(String code);
+  Future<Either<String, User>> updateProfile(
+      {String? name, String? bio, String? imagePath});
 }

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_auth_boilerplate/core/extensions/firebase_firestore_extensions.dart';
 import 'package:flutter_auth_boilerplate/data/auth/data-source/auth_data_source.dart';
 import 'package:flutter_auth_boilerplate/data/auth/models/user/firebase_user.dart';
@@ -10,11 +13,14 @@ import 'package:google_sign_in/google_sign_in.dart' as gsis;
 class FirebaseAuthDataSource implements AuthDataSource {
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firebaseFirestore;
+  final FirebaseStorage _firebaseStorage;
   FirebaseAuthDataSource(
       {required FirebaseAuth firebaseAuth,
-      required FirebaseFirestore firebaseFirestore})
+      required FirebaseFirestore firebaseFirestore,
+      required FirebaseStorage firebaseStorage})
       : _firebaseAuth = firebaseAuth,
-        _firebaseFirestore = firebaseFirestore;
+        _firebaseFirestore = firebaseFirestore,
+        _firebaseStorage = firebaseStorage;
 
   @override
   Future<FirebaseUser> getSignedInUser() async {
@@ -32,7 +38,7 @@ class FirebaseAuthDataSource implements AuthDataSource {
       final firebaseUser = FirebaseUser.fromDoc(userDoc).copyWith(
         isEmailVerified: user.emailVerified,
       );
-      return firebaseUser as FirebaseUser;
+      return firebaseUser;
     } catch (e) {
       rethrow;
     }
@@ -65,17 +71,12 @@ class FirebaseAuthDataSource implements AuthDataSource {
       debugPrint('FirebaseAuthDataSource.signInWithGoogle: Starting');
 
       // In google_sign_in 7.x, authenticate() is the recommended way for identity
-      final gsis.GoogleSignInAccount? googleUser =
+      final gsis.GoogleSignInAccount googleUser =
           await gsis.GoogleSignIn.instance.authenticate();
 
-      if (googleUser == null) {
-        debugPrint('FirebaseAuthDataSource.signInWithGoogle: User cancelled');
-        return;
-      }
       debugPrint('FirebaseAuthDataSource.signInWithGoogle: Authenticated');
 
-      final gsis.GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final gsis.GoogleSignInAuthentication googleAuth = googleUser.authentication;
       debugPrint('FirebaseAuthDataSource.signInWithGoogle: Got Authentication');
 
       // For Firebase Auth, idToken is sufficient and much smoother than
@@ -235,5 +236,47 @@ class FirebaseAuthDataSource implements AuthDataSource {
     } catch (e) {
       rethrow;
     }
+  }
+
+  @override
+  Future<User> updateProfile({String? name, String? bio, String? imagePath}) async {
+    final firebaseUser = _firebaseAuth.currentUser;
+    if (firebaseUser == null) {
+      throw Exception('User not found');
+    }
+
+    final Map<String, dynamic> updateData = {};
+    if (name != null) {
+      updateData['name'] = name;
+      await firebaseUser.updateDisplayName(name);
+    }
+    if (bio != null) {
+      updateData['bio'] = bio;
+    }
+    if (imagePath != null) {
+      final uploadedPhotoUrl =
+          await _uploadProfileImage(userId: firebaseUser.uid, imagePath: imagePath);
+      updateData['photo_url'] = uploadedPhotoUrl;
+      await firebaseUser.updatePhotoURL(uploadedPhotoUrl);
+    }
+
+    if (updateData.isNotEmpty) {
+      await _firebaseFirestore.userDocument(firebaseUser.uid).update(updateData);
+    }
+
+    await firebaseUser.reload();
+    return getSignedInUser();
+  }
+
+  Future<String> _uploadProfileImage(
+      {required String userId, required String imagePath}) async {
+    final imageFile = File(imagePath);
+    final profileRef = _firebaseStorage
+        .ref()
+        .child('users')
+        .child(userId)
+        .child('profile.jpg');
+    await profileRef.putFile(imageFile);
+    return profileRef.getDownloadURL();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide User;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_auth_boilerplate/domain/auth/entities/user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -11,7 +12,8 @@ part 'auth_data_source.g.dart';
 AuthDataSource authDataSource(Ref ref) {
   return FirebaseAuthDataSource(
       firebaseAuth: FirebaseAuth.instance,
-      firebaseFirestore: FirebaseFirestore.instance);
+      firebaseFirestore: FirebaseFirestore.instance,
+      firebaseStorage: FirebaseStorage.instance);
 }
 
 abstract class AuthDataSource {
@@ -25,4 +27,5 @@ abstract class AuthDataSource {
   Future<void> confirmPasswordReset(String code, String newPassword);
   Future<User?> reloadUser();
   Future<void> applyActionCode(String code);
+  Future<User> updateProfile({String? name, String? bio, String? imagePath});
 }

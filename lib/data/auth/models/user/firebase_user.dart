@@ -8,6 +8,7 @@ class FirebaseUser extends User {
     required String email,
     String? password,
     String? bio,
+    String? photoUrl,
     bool isAuthenticated = false,
     bool isEmailVerified = false,
   }) : super(
@@ -16,6 +17,7 @@ class FirebaseUser extends User {
           email: email,
           password: password,
           bio: bio,
+          photoUrl: photoUrl,
           isAuthenticated: isAuthenticated,
           isEmailVerified: isEmailVerified,
         );
@@ -27,6 +29,7 @@ class FirebaseUser extends User {
       name: data?['name'] as String? ?? '',
       email: data?['email'] as String? ?? '',
       bio: data?['bio'] as String?,
+      photoUrl: data?['photo_url'] as String?,
     );
   }
 
@@ -36,6 +39,7 @@ class FirebaseUser extends User {
       'name': name,
       'email': email,
       if (bio != null) 'bio': bio,
+      if (photoUrl != null) 'photo_url': photoUrl,
     };
   }
 
@@ -46,6 +50,7 @@ class FirebaseUser extends User {
       email: user.email ?? "",
       password: user.password,
       bio: user.bio,
+      photoUrl: user.photoUrl,
       isAuthenticated: user.isAuthenticated,
       isEmailVerified: user.isEmailVerified,
     );
@@ -58,6 +63,7 @@ class FirebaseUser extends User {
     String? email,
     String? password,
     String? bio,
+    String? photoUrl,
     bool? isAuthenticated,
     bool? isEmailVerified,
   }) {
@@ -67,6 +73,7 @@ class FirebaseUser extends User {
       email: email ?? this.email ?? "",
       password: password ?? this.password,
       bio: bio ?? this.bio,
+      photoUrl: photoUrl ?? this.photoUrl,
       isAuthenticated: isAuthenticated ?? this.isAuthenticated,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
     );

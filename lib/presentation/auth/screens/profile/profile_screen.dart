@@ -38,13 +38,20 @@ class ProfileScreen extends HookConsumerWidget {
                       width: 2,
                     ),
                   ),
-                  child: Center(
-                    child: Icon(
-                      Icons.person_outline,
-                      size: 50,
-                      color: theme.colorScheme.primary,
-                    ),
-                  ),
+                  child: user?.photoUrl != null && user!.photoUrl!.isNotEmpty
+                      ? ClipOval(
+                          child: Image.network(
+                            user.photoUrl!,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Center(
+                          child: Icon(
+                            Icons.person_outline,
+                            size: 50,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
                 ),
                 const SizedBox(height: 16),
                 Padding(
@@ -57,6 +64,14 @@ class ProfileScreen extends HookConsumerWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      if (user?.email != null && user!.email!.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Text(
+                            user.email!,
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ),
                       if (user?.bio != null && user!.bio!.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0),

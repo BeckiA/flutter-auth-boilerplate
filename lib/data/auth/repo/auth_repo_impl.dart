@@ -125,4 +125,20 @@ class AuthRepoImpl implements AuthRepo {
       return Left(message);
     }
   }
+
+  @override
+  Future<Either<String, User>> updateProfile(
+      {String? name, String? bio, String? imagePath}) async {
+    try {
+      final user = await authDataSource.updateProfile(
+        name: name,
+        bio: bio,
+        imagePath: imagePath,
+      );
+      return Right(user);
+    } catch (e, stackTrace) {
+      final message = handleError(e, stackTrace);
+      return Left(message);
+    }
+  }
 }

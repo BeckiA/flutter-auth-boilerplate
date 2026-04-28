@@ -56,8 +56,17 @@ class AuthNotifier extends _$AuthNotifier {
     });
   }
 
-  Future<void> updateProfile({String? name, String? bio}) async {
-    // TODO: Implement updateProfile
+  Future<String?> updateProfile({String? name, String? bio, String? imagePath}) async {
+    final result = await _authRepo.updateProfile(
+      name: name,
+      bio: bio,
+      imagePath: imagePath,
+    );
+
+    return result.fold((error) => error, (user) {
+      state = AuthState.success(user);
+      return null;
+    });
   }
 
   Future<void> resendVerificationEmail() async {
