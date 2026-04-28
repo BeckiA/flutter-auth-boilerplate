@@ -31,20 +31,28 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
-            <!-- Deep linking intent filter -->
+            <!-- Deep linking intent filter for Firebase Auth actions -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                
-                <!-- Firebase Domains -->
-                <data android:scheme="https" android:host="flutter-auth-boilerplate-c25e8.firebaseapp.com" />
-                <data android:scheme="https" android:host="flutter-auth-boilerplate-c25e8.web.app" />
-                <data android:scheme="http" android:host="flutter-auth-boilerplate-c25e8.firebaseapp.com" />
-                <data android:scheme="http" android:host="flutter-auth-boilerplate-c25e8.web.app" />
-                
-                <!-- Specifically for Auth Actions -->
-                <data android:pathPrefix="/__/auth" />
+
+                <data
+                    android:scheme="https"
+                    android:host="flutter-auth-boilerplate-c25e8.firebaseapp.com"
+                    android:pathPrefix="/__/auth" />
+                <data
+                    android:scheme="https"
+                    android:host="flutter-auth-boilerplate-c25e8.web.app"
+                    android:pathPrefix="/__/auth" />
+                <data
+                    android:scheme="http"
+                    android:host="flutter-auth-boilerplate-c25e8.firebaseapp.com"
+                    android:pathPrefix="/__/auth" />
+                <data
+                    android:scheme="http"
+                    android:host="flutter-auth-boilerplate-c25e8.web.app"
+                    android:pathPrefix="/__/auth" />
             </intent-filter>
 
             <!-- Custom Scheme Deep Linking -->

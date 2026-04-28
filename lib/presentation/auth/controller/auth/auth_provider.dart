@@ -84,4 +84,14 @@ class AuthNotifier extends _$AuthNotifier {
       (_) async => await getCurrentUser(),
     );
   }
+
+  Future<String?> sendPasswordResetEmail(String email) async {
+    final result = await _authRepo.sendPasswordResetEmail(email);
+    return result.fold((error) => error, (_) => null);
+  }
+
+  Future<String?> confirmPasswordReset(String code, String newPassword) async {
+    final result = await _authRepo.confirmPasswordReset(code, newPassword);
+    return result.fold((error) => error, (_) => null);
+  }
 }

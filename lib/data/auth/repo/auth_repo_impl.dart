@@ -82,6 +82,29 @@ class AuthRepoImpl implements AuthRepo {
   }
 
   @override
+  Future<Either<String, Unit>> sendPasswordResetEmail(String email) async {
+    try {
+      await authDataSource.sendPasswordResetEmail(email);
+      return const Right(unit);
+    } catch (e, stackTrace) {
+      final message = handleError(e, stackTrace);
+      return Left(message);
+    }
+  }
+
+  @override
+  Future<Either<String, Unit>> confirmPasswordReset(
+      String code, String newPassword) async {
+    try {
+      await authDataSource.confirmPasswordReset(code, newPassword);
+      return const Right(unit);
+    } catch (e, stackTrace) {
+      final message = handleError(e, stackTrace);
+      return Left(message);
+    }
+  }
+
+  @override
   Future<Either<String, User?>> reloadUser() async {
     try {
       final user = await authDataSource.reloadUser();

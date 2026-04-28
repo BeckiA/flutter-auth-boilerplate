@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:app_links/app_links.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_auth_boilerplate/presentation/auth/controller/auth/auth_provider.dart';
+import 'package:flutter_auth_boilerplate/core/configs/router-configs/router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final deepLinkServiceProvider = Provider<DeepLinkService>((ref) {
@@ -44,12 +44,51 @@ class DeepLinkService {
 
   void _handleUri(Uri uri) {
     debugPrint('DeepLinkService: Received link: $uri');
-    
-    // Firebase Auth links usually contain oobCode in query parameters
+
     final oobCode = uri.queryParameters['oobCode'];
-    if (oobCode != null) {
-      debugPrint('DeepLinkService: Found oobCode, verifying email link...');
-      _ref.read(authNotifierProvider.notifier).verifyEmailLink(oobCode);
+    final mode = uri.queryParameters['mode'];
+    final router = _ref.read(routeProvider);
+
+    // If this URI already carries an auth action payload, handle it directly.
+    // Do this BEFORE inspecting nested links to avoid losing oobCode/mode by
+    // following continueUrl.
+    if (oobCode != null && (mode == 'verifyEmail' || mode == 'resetPassword')) {
+      final location = '/__/auth/action?mode=$mode&oobCode=$oobCode';
+      debugPrint('DeepLinkService: Redirecting auth mode "$mode" to $location');
+      router.go(location);
+      return;
+    }
+
+    // Firebase wrapper links include the actual action URL in "link".
+    // Do not recurse into "continueUrl" because that often points to a plain
+    // callback URL without action params.
+    final wrappedLink = uri.queryParameters['link'];
+    if (wrappedLink != null && wrappedLink.isNotEmpty) {
+      final wrappedUri = Uri.tryParse(Uri.decodeFull(wrappedLink));
+      if (wrappedUri != null) {
+        _handleUri(wrappedUri);
+        return;
+      }
+    }
+
+    if (uri.path.startsWith('/__/auth/')) {
+      // Ignore incomplete auth callbacks (e.g. plain /__/auth/action) because
+      // they can arrive after a valid deep link and override the correct route.
+      if (uri.path == '/__/auth/action' && oobCode == null) {
+        debugPrint(
+            'DeepLinkService: Ignoring auth/action without mode/oobCode.');
+        return;
+      }
+      if (uri.path == '/__/auth/links' && wrappedLink == null) {
+        debugPrint(
+            'DeepLinkService: Ignoring auth/links without wrapped link.');
+        return;
+      }
+
+      final location = '${uri.path}${uri.hasQuery ? '?${uri.query}' : ''}';
+      debugPrint('DeepLinkService: Navigating to auth action route: $location');
+      router.go(location);
+      return;
     }
   }
 

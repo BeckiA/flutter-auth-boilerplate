@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_auth_boilerplate/core/configs/router-configs/route_names.dart';
+import 'package:flutter_auth_boilerplate/presentation/auth/screens/forgot_password_screen.dart';
 import 'package:flutter_auth_boilerplate/presentation/auth/screens/home_screen.dart';
+import 'package:flutter_auth_boilerplate/presentation/auth/screens/reset_password_screen.dart';
 import 'package:flutter_auth_boilerplate/presentation/auth/screens/sign_in_screen.dart';
 import 'package:flutter_auth_boilerplate/presentation/auth/screens/sign_up_screen.dart';
 import 'package:flutter_auth_boilerplate/presentation/onboarding/screens/onboarding_screen.dart';
@@ -53,6 +55,23 @@ final routeProvider = Provider((ref) {
             path: "/sign-in",
             builder: (context, state) => const SignInScreen()),
         GoRoute(
+            name: RouteNames.forgotPassword,
+            path: "/forgot-password",
+            builder: (context, state) => const ForgotPasswordScreen()),
+        GoRoute(
+            name: RouteNames.resetPassword,
+            path: "/reset-password",
+            builder: (context, state) {
+              final code = state.uri.queryParameters['oobCode'] ??
+                  state.extra as String?;
+              if (code == null || code.isEmpty) {
+                return const Scaffold(
+                  body: Center(child: Text("Invalid reset password link")),
+                );
+              }
+              return ResetPasswordScreen(oobCode: code);
+            }),
+        GoRoute(
             name: RouteNames.home,
             path: "/home",
             builder: (context, state) => const HomeScreen()),
@@ -61,28 +80,53 @@ final routeProvider = Provider((ref) {
             path: "/email-verification",
             builder: (context, state) => const EmailVerificationScreen()),
         GoRoute(
+            path: "/__/auth/links",
+            builder: (context, state) {
+              final wrappedLink = state.uri.queryParameters['link'];
+              if (wrappedLink == null || wrappedLink.isEmpty) {
+                return const Scaffold(
+                  body: Center(child: Text("Invalid auth link")),
+                );
+              }
+
+              final nestedUri = Uri.tryParse(Uri.decodeFull(wrappedLink));
+              if (nestedUri == null) {
+                return const Scaffold(
+                  body: Center(child: Text("Invalid auth link")),
+                );
+              }
+
+              return _buildAuthActionScreen(ref, nestedUri);
+            }),
+        GoRoute(
             path: "/__/auth/action",
             builder: (context, state) {
-              final code = state.uri.queryParameters['oobCode'];
-              final mode = state.uri.queryParameters['mode'];
-
-              if (code != null && mode == 'verifyEmail') {
-                // Return a simple loading screen while we verify
-                return Builder(builder: (context) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    ref.read(authNotifierProvider.notifier).verifyEmailLink(code);
-                  });
-                  return const Scaffold(
-                    body: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                });
-              }
-              return const Scaffold(
-                body: Center(child: Text("Invalid verification link")),
-              );
+              return _buildAuthActionScreen(ref, state.uri);
             }),
       ]);
 });
 
+Widget _buildAuthActionScreen(Ref ref, Uri uri) {
+  final code = uri.queryParameters['oobCode'];
+  final mode = uri.queryParameters['mode'];
+
+  if (code != null && mode == 'verifyEmail') {
+    // Return a simple loading screen while we verify
+    return Builder(builder: (context) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(authNotifierProvider.notifier).verifyEmailLink(code);
+      });
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    });
+  }
+  if (code != null && mode == 'resetPassword') {
+    return ResetPasswordScreen(oobCode: code);
+  }
+  return const Scaffold(
+    body: Center(child: Text("Invalid verification link")),
+  );
+}

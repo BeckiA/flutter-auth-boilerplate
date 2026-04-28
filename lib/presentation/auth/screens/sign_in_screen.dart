@@ -160,6 +160,16 @@ class SignInScreen extends HookConsumerWidget {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       onFieldSubmitted: (_) => onSignIn(),
                     ),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: isSigningIn
+                            ? null
+                            : () =>
+                                context.pushNamed(RouteNames.forgotPassword),
+                        child: const Text('Forgot Password?'),
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     AppButton(
                       onPressed: isSigningIn ? null : onSignIn,
@@ -174,7 +184,10 @@ class SignInScreen extends HookConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             'OR',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(
                                   color: Theme.of(context).colorScheme.outline,
                                 ),
                           ),

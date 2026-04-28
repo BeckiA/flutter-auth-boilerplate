@@ -21,6 +21,8 @@ abstract class AuthDataSource {
   Future<void> signOut();
   Future<User> getSignedInUser();
   Future<void> sendEmailVerification();
+  Future<void> sendPasswordResetEmail(String email);
+  Future<void> confirmPasswordReset(String code, String newPassword);
   Future<User?> reloadUser();
   Future<void> applyActionCode(String code);
 }

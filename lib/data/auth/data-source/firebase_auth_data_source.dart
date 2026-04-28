@@ -134,7 +134,8 @@ class FirebaseAuthDataSource implements AuthDataSource {
         debugPrint(
             'FirebaseAuthDataSource.signUp: Sending verification email with deep link...');
         final ActionCodeSettings actionCodeSettings = ActionCodeSettings(
-          url: 'https://flutter-auth-boilerplate-c25e8.firebaseapp.com',
+          url:
+              'https://flutter-auth-boilerplate-c25e8.firebaseapp.com/__/auth/action',
           handleCodeInApp: true,
           androidPackageName: 'com.flutter_auth_boilerplate',
           androidInstallApp: true,
@@ -174,6 +175,39 @@ class FirebaseAuthDataSource implements AuthDataSource {
       );
       await _firebaseAuth.currentUser
           ?.sendEmailVerification(actionCodeSettings);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      final ActionCodeSettings actionCodeSettings = ActionCodeSettings(
+        url:
+            'https://flutter-auth-boilerplate-c25e8.firebaseapp.com/__/auth/action',
+        handleCodeInApp: true,
+        androidPackageName: 'com.flutter_auth_boilerplate',
+        androidInstallApp: true,
+        androidMinimumVersion: '1',
+      );
+      await _firebaseAuth.sendPasswordResetEmail(
+        email: email,
+        actionCodeSettings: actionCodeSettings,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> confirmPasswordReset(String code, String newPassword) async {
+    try {
+      await _firebaseAuth.verifyPasswordResetCode(code);
+      await _firebaseAuth.confirmPasswordReset(
+        code: code,
+        newPassword: newPassword,
+      );
     } catch (e) {
       rethrow;
     }

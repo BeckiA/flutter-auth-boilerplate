@@ -20,6 +20,9 @@ abstract class AuthRepo {
   Future<Either<String, Unit>> signOut();
   Future<Either<String, User>> getSignedInUser();
   Future<Either<String, Unit>> sendEmailVerification();
+  Future<Either<String, Unit>> sendPasswordResetEmail(String email);
+  Future<Either<String, Unit>> confirmPasswordReset(
+      String code, String newPassword);
   Future<Either<String, User?>> reloadUser();
   Future<Either<String, Unit>> verifyEmail(String code);
 }

@@ -5,15 +5,28 @@ FutureOr<String?> handleRedirect(
   final matchedLocation = state.matchedLocation;
   final isSignin = matchedLocation == "/sign-in";
   final isSignup = matchedLocation == "/sign-up";
+  final isForgotPassword = matchedLocation == "/forgot-password";
+  final isResetPassword = matchedLocation == "/reset-password";
   final isSplashScreen = matchedLocation == "/splash-screen";
   final isOnboarding = matchedLocation == "/onboarding";
   final isAuthAction = matchedLocation.startsWith("/__/auth/");
 
-  final isPublicPage = isSignup || isSignin || isOnboarding || isSplashScreen || isAuthAction;
+  final isPublicPage = isSignup ||
+      isSignin ||
+      isForgotPassword ||
+      isResetPassword ||
+      isOnboarding ||
+      isSplashScreen ||
+      isAuthAction;
 
   // check if the user has seen the onboarding screen
   final hasSeenOnboarding = _hasSeenOnboarding(ref);
-  if (!hasSeenOnboarding && !isOnboarding && !isSplashScreen && !isAuthAction) {
+  if (!hasSeenOnboarding &&
+      !isOnboarding &&
+      !isSplashScreen &&
+      !isAuthAction &&
+      !isForgotPassword &&
+      !isResetPassword) {
     return "/onboarding";
   }
 
@@ -30,7 +43,8 @@ FutureOr<String?> handleRedirect(
     orElse: () => false,
   );
 
-  final isEmailVerificationPage = state.matchedLocation == "/email-verification";
+  final isEmailVerificationPage =
+      state.matchedLocation == "/email-verification";
 
   // Special handling for Splash Screen
   if (isSplashScreen) {
@@ -44,7 +58,10 @@ FutureOr<String?> handleRedirect(
   }
 
   // If authenticated but not verified, force to verification page
-  if (isAuthenticated && !isEmailVerified && !isEmailVerificationPage && !isPublicPage) {
+  if (isAuthenticated &&
+      !isEmailVerified &&
+      !isEmailVerificationPage &&
+      !isPublicPage) {
     return "/email-verification";
   }
 
@@ -57,7 +74,7 @@ FutureOr<String?> handleRedirect(
   if (isAuthenticated && isPublicPage) {
     // Allow users to finish onboarding or process auth deep links even if they are already authenticated
     if ((isOnboarding && !hasSeenOnboarding) || isAuthAction) return null;
-    
+
     if (!isEmailVerified) return "/email-verification";
     return "/home";
   }
@@ -74,5 +91,3 @@ bool _hasSeenOnboarding(Ref<Object?> ref) {
   final hasSeenOnboarding = ref.read(hasSeenOnboardingProvider);
   return hasSeenOnboarding;
 }
-
-
