@@ -94,53 +94,44 @@ class SignInScreen extends HookConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 40),
-                    Icon(
-                      Icons.fitness_center,
-                      size: 80,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 60),
                     Text(
-                      'Welcome Back!',
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                      textAlign: TextAlign.center,
+                      'Welcome back',
+                      style: Theme.of(context).textTheme.displayLarge,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Sign in to continue your fitness journey',
+                      'Sign in to your account',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
+                            color: Theme.of(context).textTheme.labelSmall?.color,
                           ),
-                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
+                    Text(
+                      'Email',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    const SizedBox(height: 8),
                     TextFormField(
                       controller: emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
+                      decoration: const InputDecoration(
                         hintText: 'Enter your email',
-                        prefixIcon: const Icon(Icons.email_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
                       ),
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       validator: validateEmail,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Password',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    const SizedBox(height: 8),
                     TextFormField(
                       controller: passwordController,
                       decoration: InputDecoration(
-                        labelText: 'Password',
                         hintText: 'Enter your password',
-                        prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
                             isPasswordVisible.value
@@ -150,9 +141,6 @@ class SignInScreen extends HookConsumerWidget {
                           onPressed: () => isPasswordVisible.value =
                               !isPasswordVisible.value,
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
                       ),
                       obscureText: !isPasswordVisible.value,
                       textInputAction: TextInputAction.done,
@@ -160,6 +148,7 @@ class SignInScreen extends HookConsumerWidget {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       onFieldSubmitted: (_) => onSignIn(),
                     ),
+                    const SizedBox(height: 8),
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
@@ -167,10 +156,13 @@ class SignInScreen extends HookConsumerWidget {
                             ? null
                             : () =>
                                 context.pushNamed(RouteNames.forgotPassword),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Theme.of(context).colorScheme.primary,
+                        ),
                         child: const Text('Forgot Password?'),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
                     AppButton(
                       onPressed: isSigningIn ? null : onSignIn,
                       isLoading: isSigningIn,
@@ -184,12 +176,7 @@ class SignInScreen extends HookConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             'OR',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.copyWith(
-                                  color: Theme.of(context).colorScheme.outline,
-                                ),
+                            style: Theme.of(context).textTheme.labelSmall,
                           ),
                         ),
                         const Expanded(child: Divider()),
@@ -214,39 +201,33 @@ class SignInScreen extends HookConsumerWidget {
                               'assets/images/google-icon-logo.png',
                               height: 24,
                             ),
-                      label: Text(isSigningIn
-                          ? 'Signing in...'
-                          : 'Sign in with Google'),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        side: BorderSide(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .outline
-                              .withValues(alpha: 0.5),
-                        ),
-                      ),
+                      label: Text(isSigningIn ? 'Signing in...' : 'Sign in with Google'),
                     ),
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () {
-                        context.pushNamed(RouteNames.signUp);
-                      },
-                      child: Text.rich(
-                        TextSpan(
-                          text: 'Don\'t have an account? ',
-                          children: [
-                            TextSpan(
-                              text: 'Sign Up',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
+                    const SizedBox(height: 32),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          context.pushNamed(RouteNames.signUp);
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Theme.of(context).colorScheme.primary,
+                        ),
+                        child: Text.rich(
+                          TextSpan(
+                            text: 'Don\'t have an account? ',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).textTheme.labelSmall?.color,
+                                ),
+                            children: const [
+                              TextSpan(
+                                text: 'Sign Up',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),

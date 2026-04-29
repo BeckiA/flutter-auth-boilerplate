@@ -52,77 +52,100 @@ class EditProfileScreen extends HookConsumerWidget {
     }
 
     return Scaffold(
-      appBar: _buildAppBar(isLoading, onSave),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      appBar: AppBar(
+        title: const Text(
+          'Edit Profile',
+          style: TextStyle(fontWeight: FontWeight.w700),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(height: 1, color: const Color(0xFFE2E8F0)),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: isLoading.value
+                ? const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
+                : TextButton(
+                    onPressed: onSave,
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildAvatar(
-              context,
-              selectedImagePath: selectedImagePath.value,
-              currentPhotoUrl: user?.photoUrl,
-              onPickImage: onPickImage,
+            // Avatar picker
+            Center(
+              child: Stack(
+                children: [
+                  _buildAvatar(
+                    context,
+                    selectedImagePath: selectedImagePath.value,
+                    currentPhotoUrl: user?.photoUrl,
+                    onPickImage: onPickImage,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 16),
-            _buildNameField(nameController),
-            const SizedBox(height: 16),
-            _buildBioField(bioController),
+            const SizedBox(height: 32),
+            // Name field
+            Text(
+              'Name',
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                hintText: 'Enter your name',
+              ),
+              textCapitalization: TextCapitalization.words,
+              textInputAction: TextInputAction.next,
+            ),
             const SizedBox(height: 24),
-            _buildSaveChangesBtn(isLoading, onSave),
+            // Bio field
+            Text(
+              'Bio',
+              style: Theme.of(context).textTheme.labelSmall,
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: bioController,
+              decoration: const InputDecoration(
+                hintText: 'Tell us a bit about yourself',
+                alignLabelWithHint: true,
+              ),
+              maxLines: 4,
+              textCapitalization: TextCapitalization.sentences,
+              textInputAction: TextInputAction.done,
+            ),
+            const SizedBox(height: 32),
+            AppButton(
+              text: 'Save Changes',
+              onPressed: isLoading.value ? null : onSave,
+              isLoading: isLoading.value,
+            ),
           ],
         ),
       ),
-    );
-  }
-
-  AppButton _buildSaveChangesBtn(
-      ValueNotifier<bool> isLoading, Future<void> Function() onSave) {
-    return AppButton(
-      text: 'Save Changes',
-      onPressed: isLoading.value ? null : onSave,
-      isLoading: isLoading.value,
-    );
-  }
-
-  TextField _buildBioField(TextEditingController bioController) {
-    return TextField(
-      controller: bioController,
-      decoration: const InputDecoration(
-        labelText: 'Bio',
-        border: OutlineInputBorder(),
-      ),
-      maxLines: 3,
-      textCapitalization: TextCapitalization.sentences,
-    );
-  }
-
-  TextField _buildNameField(TextEditingController nameController) {
-    return TextField(
-      controller: nameController,
-      decoration: const InputDecoration(
-        labelText: 'Name',
-        border: OutlineInputBorder(),
-      ),
-      textCapitalization: TextCapitalization.words,
-    );
-  }
-
-  AppBar _buildAppBar(
-      ValueNotifier<bool> isLoading, Future<void> Function() onSave) {
-    return AppBar(
-      title: const Text('Edit Profile'),
-      actions: [
-        IconButton(
-          icon: isLoading.value
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Icon(Icons.save),
-          onPressed: isLoading.value ? null : onSave,
-        ),
-      ],
     );
   }
 
@@ -139,39 +162,37 @@ class EditProfileScreen extends HookConsumerWidget {
       imageProvider = NetworkImage(currentPhotoUrl);
     }
 
-    return Center(
-      child: Stack(
-        children: [
-          CircleAvatar(
-            radius: 52,
-            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-            backgroundImage: imageProvider,
-            child: imageProvider == null
-                ? const Icon(Icons.person_outline, size: 46)
-                : null,
-          ),
-          Positioned(
-            right: 0,
-            bottom: 0,
-            child: Material(
-              color: Theme.of(context).colorScheme.primary,
-              shape: const CircleBorder(),
-              child: InkWell(
-                customBorder: const CircleBorder(),
-                onTap: onPickImage,
-                child: const Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Icon(
-                    Icons.photo_library_outlined,
-                    color: Colors.white,
-                    size: 20,
-                  ),
+    return Stack(
+      children: [
+        CircleAvatar(
+          radius: 52,
+          backgroundColor: const Color(0xFFE2E8F0),
+          backgroundImage: imageProvider,
+          child: imageProvider == null
+              ? const Icon(Icons.person_outline, size: 46, color: Color(0xFF64748B))
+              : null,
+        ),
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: Material(
+            color: Colors.black,
+            shape: const CircleBorder(),
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: onPickImage,
+              child: const Padding(
+                padding: EdgeInsets.all(8),
+                child: Icon(
+                  Icons.photo_library_outlined,
+                  color: Colors.white,
+                  size: 20,
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

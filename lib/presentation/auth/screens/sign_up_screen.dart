@@ -120,68 +120,59 @@ class SignUpScreen extends HookConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 40),
-                    Icon(
-                      Icons.fitness_center,
-                      size: 80,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 60),
                     Text(
                       'Create Account',
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.displayLarge,
                     ),
                     const SizedBox(height: 8),
                     Text(
                       'Start your fitness journey today',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
+                            color: Theme.of(context).textTheme.labelSmall?.color,
                           ),
-                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 48),
+                    Text(
+                      'Name',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    const SizedBox(height: 8),
                     TextFormField(
                       controller: nameController,
-                      decoration: InputDecoration(
-                        labelText: 'Name',
+                      decoration: const InputDecoration(
                         hintText: 'Enter your name',
-                        prefixIcon: const Icon(Icons.person_outline),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
                       ),
                       textInputAction: TextInputAction.next,
                       validator: validateName,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Email',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    const SizedBox(height: 8),
                     TextFormField(
                       controller: emailController,
-                      decoration: InputDecoration(
-                        labelText: 'Email',
+                      decoration: const InputDecoration(
                         hintText: 'Enter your email',
-                        prefixIcon: const Icon(Icons.email_outlined),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
                       ),
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       validator: validateEmail,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Password',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    const SizedBox(height: 8),
                     TextFormField(
                       controller: passwordController,
                       decoration: InputDecoration(
-                        labelText: 'Password',
                         hintText: 'Enter your password',
-                        prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
                             isPasswordVisible.value
@@ -191,22 +182,22 @@ class SignUpScreen extends HookConsumerWidget {
                           onPressed: () => isPasswordVisible.value =
                               !isPasswordVisible.value,
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
                       ),
                       obscureText: !isPasswordVisible.value,
                       textInputAction: TextInputAction.next,
                       validator: validatePassword,
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Confirm Password',
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                    const SizedBox(height: 8),
                     TextFormField(
                       controller: confirmPasswordController,
                       decoration: InputDecoration(
-                        labelText: 'Confirm Password',
                         hintText: 'Confirm your password',
-                        prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
                           icon: Icon(
                             isConfirmPasswordVisible.value
@@ -216,9 +207,6 @@ class SignUpScreen extends HookConsumerWidget {
                           onPressed: () => isConfirmPasswordVisible.value =
                               !isConfirmPasswordVisible.value,
                         ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
                       ),
                       obscureText: !isConfirmPasswordVisible.value,
                       textInputAction: TextInputAction.done,
@@ -226,29 +214,37 @@ class SignUpScreen extends HookConsumerWidget {
                       autovalidateMode: AutovalidateMode.onUserInteraction,
                       onFieldSubmitted: (_) => onSignUp(),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
                     AppButton(
                       text: 'Create Account',
                       onPressed: isSigningUp ? null : onSignUp,
                       isLoading: isSigningUp,
                     ),
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () {
-                        context.pushNamed(RouteNames.signIn);
-                      },
-                      child: Text.rich(
-                        TextSpan(
-                          text: 'Already have an account? ',
-                          children: [
-                            TextSpan(
-                              text: 'Sign In',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
+                    const SizedBox(height: 32),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          context.pushNamed(RouteNames.signIn);
+                        },
+                        style: TextButton.styleFrom(
+                          foregroundColor: Theme.of(context).colorScheme.primary,
+                        ),
+                        child: Text.rich(
+                          TextSpan(
+                            text: 'Already have an account? ',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Theme.of(context).textTheme.labelSmall?.color,
+                                ),
+                            children: const [
+                              TextSpan(
+                                text: 'Sign In',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),
