@@ -67,7 +67,10 @@ class ResetPasswordScreen extends HookConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Reset Password')),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -76,12 +79,24 @@ class ResetPasswordScreen extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 24),
+                const SizedBox(height: 60),
+                Text(
+                  'Password Reset',
+                  style: Theme.of(context).textTheme.displayLarge,
+                ),
+                const SizedBox(height: 8),
                 Text(
                   'Set a new password for your account.',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).textTheme.labelSmall?.color,
+                      ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 48),
+                Text(
+                  'New Password',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: passwordController,
                   obscureText: !isPasswordVisible.value,
@@ -89,8 +104,7 @@ class ResetPasswordScreen extends HookConsumerWidget {
                   validator: validatePassword,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: InputDecoration(
-                    labelText: 'New Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    hintText: 'Enter new password',
                     suffixIcon: IconButton(
                       icon: Icon(
                         isPasswordVisible.value
@@ -100,12 +114,14 @@ class ResetPasswordScreen extends HookConsumerWidget {
                       onPressed: () =>
                           isPasswordVisible.value = !isPasswordVisible.value,
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
+                Text(
+                  'Confirm New Password',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: confirmPasswordController,
                   obscureText: !isConfirmPasswordVisible.value,
@@ -114,8 +130,7 @@ class ResetPasswordScreen extends HookConsumerWidget {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   onFieldSubmitted: (_) => onSubmit(),
                   decoration: InputDecoration(
-                    labelText: 'Confirm New Password',
-                    prefixIcon: const Icon(Icons.lock_outline),
+                    hintText: 'Confirm new password',
                     suffixIcon: IconButton(
                       icon: Icon(
                         isConfirmPasswordVisible.value
@@ -125,12 +140,9 @@ class ResetPasswordScreen extends HookConsumerWidget {
                       onPressed: () => isConfirmPasswordVisible.value =
                           !isConfirmPasswordVisible.value,
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
                 AppButton(
                   text: 'Reset Password',
                   onPressed: isSubmitting.value ? null : onSubmit,

@@ -49,7 +49,10 @@ class ForgotPasswordScreen extends HookConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Forgot Password')),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -58,29 +61,36 @@ class ForgotPasswordScreen extends HookConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 24),
+                const SizedBox(height: 60),
+                Text(
+                  'Forgot Password',
+                  style: Theme.of(context).textTheme.displayLarge,
+                ),
+                const SizedBox(height: 8),
                 Text(
                   'Enter your account email and we will send you a link to reset your password.',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Theme.of(context).textTheme.labelSmall?.color,
+                      ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 48),
+                Text(
+                  'Email',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                const SizedBox(height: 8),
                 TextFormField(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.done,
                   validator: validateEmail,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
+                  decoration: const InputDecoration(
                     hintText: 'Enter your email',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
                   ),
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   onFieldSubmitted: (_) => onSubmit(),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 32),
                 AppButton(
                   text: 'Send Reset Link',
                   onPressed: isSubmitting.value ? null : onSubmit,

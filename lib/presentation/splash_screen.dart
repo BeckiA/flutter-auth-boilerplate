@@ -17,17 +17,33 @@ class SplashScreen extends HookConsumerWidget {
       return null;
     }, []);
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.fitness_center,
-              size: 80,
-              color: Theme.of(context).colorScheme.primary,
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Icon(
+                Icons.bolt_rounded,
+                size: 50,
+                color: Colors.white,
+              ),
             ),
-            const SizedBox(height: 20),
-            const CircularProgressIndicator(),
+            const SizedBox(height: 48),
+            const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+              ),
+            ),
           ],
         ),
       ),
