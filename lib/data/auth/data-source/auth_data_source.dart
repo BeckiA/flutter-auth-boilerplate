@@ -1,19 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart' hide User;
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_auth_boilerplate/data/auth/data-source/supabase_auth_data_source.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 import 'package:flutter_auth_boilerplate/domain/auth/entities/user.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import 'firebase_auth_data_source.dart';
 part 'auth_data_source.g.dart';
 
 @Riverpod(keepAlive: true)
 AuthDataSource authDataSource(Ref ref) {
-  return FirebaseAuthDataSource(
-      firebaseAuth: FirebaseAuth.instance,
-      firebaseFirestore: FirebaseFirestore.instance,
-      firebaseStorage: FirebaseStorage.instance);
+  return SupabaseAuthDataSource(
+    client: sb.Supabase.instance.client,
+  );
 }
 
 abstract class AuthDataSource {

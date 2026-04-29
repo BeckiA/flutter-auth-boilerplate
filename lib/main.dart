@@ -1,5 +1,5 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_auth_boilerplate/firebase_options.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter_auth_boilerplate/core/services/secure_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,8 +13,10 @@ import 'presentation/onboarding/controllers/onboarding/onboarding_provider.dart'
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final sh = await SharedPreferences.getInstance();
-  await _initializeFirebase();
+  
+  await _initializeSupabase();
   await GoogleSignIn.instance.initialize();
+  
   runApp(
     ProviderScope(
       overrides: [
@@ -25,8 +27,21 @@ void main() async {
   );
 }
 
-Future<void> _initializeFirebase() async {
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+Future<void> _initializeSupabase() async {
+  const storage = SecureStorageService();
+  final config = await storage.getSupabaseConfig();
+  final url = config['url'];
+  final anonKey = config['anonKey'];
+
+  if (url != null && anonKey != null && url.isNotEmpty && anonKey.isNotEmpty) {
+    await Supabase.initialize(
+      url: url,
+      anonKey: anonKey,
+    );
+  } else {
+    debugPrint('Supabase configuration missing in SecureStorage.');
+    // Note: You can set these keys using SecureStorageService().saveSupabaseConfig(url: ..., anonKey: ...)
+  }
 }
 
 class MyApp extends ConsumerWidget {

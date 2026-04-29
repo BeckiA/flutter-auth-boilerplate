@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'src/index.dart';
 
@@ -13,6 +14,10 @@ class _ErrorFactory {
   static BaseErrorHandler getErrorHandler(dynamic error) {
     if (error is SocketException || error is TimeoutException) {
       return NetworkIssueHandler();
+    } else if (error is AuthException ||
+        error is PostgrestException ||
+        error is StorageException) {
+      return SupabaseErrorHandler();
     } else if (error is FirebaseAuthException || error is FirebaseException) {
       return FirebaseErrorHandler();
     } else {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth_boilerplate/core/extensions/user_ref_extension.dart';
-import 'package:flutter_auth_boilerplate/presentation/auth/controller/auth/auth_provider.dart';
 import 'package:flutter_auth_boilerplate/presentation/auth/screens/profile/profile_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
