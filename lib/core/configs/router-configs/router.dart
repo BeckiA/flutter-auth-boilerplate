@@ -62,7 +62,8 @@ final routeProvider = Provider((ref) {
             name: RouteNames.resetPassword,
             path: "/reset-password",
             builder: (context, state) {
-              final code = state.uri.queryParameters['oobCode'] ??
+              final code = state.uri.queryParameters['code'] ??
+                  state.uri.queryParameters['oobCode'] ??
                   state.extra as String?;
               if (code == null || code.isEmpty) {
                 return const Scaffold(

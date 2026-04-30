@@ -49,10 +49,14 @@
                     android:scheme="http"
                     android:host="flutter-auth-boilerplate-c25e8.firebaseapp.com"
                     android:pathPrefix="/__/auth" />
-                <data
-                    android:scheme="http"
-                    android:host="flutter-auth-boilerplate-c25e8.web.app"
-                    android:pathPrefix="/__/auth" />
+            </intent-filter>
+
+            <!-- Deep linking intent filter for Supabase Auth actions -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="com.flutterauthboilerplate" />
             </intent-filter>
 
             <!-- Custom Scheme Deep Linking -->

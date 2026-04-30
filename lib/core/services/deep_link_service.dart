@@ -49,6 +49,29 @@ class DeepLinkService {
     final mode = uri.queryParameters['mode'];
     final router = _ref.read(routeProvider);
 
+    // Handle Supabase custom scheme links
+    if (uri.scheme == 'com.flutterauthboilerplate') {
+      final code = uri.queryParameters['code'];
+      // In custom schemes, the first segment can be interpreted as the host or the path
+      final host = uri.host;
+      final path = uri.path.replaceAll('/', '');
+      
+      final isResetPassword = host == 'reset-password' || path == 'reset-password';
+      final isLogin = host == 'login' || path == 'login';
+
+      if (isResetPassword && code != null) {
+        debugPrint('DeepLinkService: Redirecting to reset-password with code');
+        router.go('/reset-password?code=$code');
+        return;
+      }
+
+      if (isLogin) {
+        debugPrint('DeepLinkService: Redirecting to sign-in');
+        router.go('/sign-in');
+        return;
+      }
+    }
+
     // If this URI already carries an auth action payload, handle it directly.
     // Do this BEFORE inspecting nested links to avoid losing oobCode/mode by
     // following continueUrl.

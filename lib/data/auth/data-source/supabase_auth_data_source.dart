@@ -5,11 +5,13 @@ import 'package:flutter_auth_boilerplate/data/auth/data-source/auth_data_source.
 import 'package:flutter_auth_boilerplate/data/auth/models/user/supabase_user.dart';
 import 'package:flutter_auth_boilerplate/domain/auth/entities/user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import 'package:google_sign_in/google_sign_in.dart';
 
 class SupabaseAuthDataSource implements AuthDataSource {
   final sb.SupabaseClient _client;
 
-  SupabaseAuthDataSource({required sb.SupabaseClient client}) : _client = client;
+  SupabaseAuthDataSource({required sb.SupabaseClient client})
+      : _client = client;
 
   @override
   Future<SupabaseUser> getSignedInUser() async {
@@ -61,9 +63,28 @@ class SupabaseAuthDataSource implements AuthDataSource {
   @override
   Future<void> signInWithGoogle() async {
     try {
-      // Supabase Google sign-in usually triggers a browser/native flow.
-      // For boilerplate, we'll use the default OAuth flow.
-      await _client.auth.signInWithOAuth(sb.OAuthProvider.google);
+      final scopes = ['email', 'profile'];
+      final googleSignIn = GoogleSignIn.instance;
+
+      final googleUser = await googleSignIn.attemptLightweightAuthentication();
+      if (googleUser == null) return;
+
+      final googleAuth = googleUser.authentication;
+      final idToken = googleAuth.idToken;
+
+      final authorization =
+          await googleUser.authorizationClient.authorizationForScopes(scopes) ??
+              await googleUser.authorizationClient.authorizeScopes(scopes);
+
+      if (idToken == null) {
+        throw Exception('Google Sign-In failed: No ID Token found');
+      }
+
+      await _client.auth.signInWithIdToken(
+        provider: sb.OAuthProvider.google,
+        idToken: idToken,
+        accessToken: authorization.accessToken,
+      );
     } catch (e) {
       rethrow;
     }
@@ -77,6 +98,7 @@ class SupabaseAuthDataSource implements AuthDataSource {
         email: supabaseUser.email!,
         password: supabaseUser.password!,
         data: {'name': supabaseUser.name},
+        emailRedirectTo: 'com.flutterauthboilerplate://login',
       );
 
       final sbUser = response.user;
@@ -104,7 +126,11 @@ class SupabaseAuthDataSource implements AuthDataSource {
     try {
       final email = _client.auth.currentUser?.email;
       if (email != null) {
-        await _client.auth.resend(type: sb.OtpType.signup, email: email);
+        await _client.auth.resend(
+          type: sb.OtpType.signup,
+          email: email,
+          emailRedirectTo: 'com.flutterauthboilerplate://login',
+        );
       }
     } catch (e) {
       rethrow;
@@ -114,7 +140,10 @@ class SupabaseAuthDataSource implements AuthDataSource {
   @override
   Future<void> sendPasswordResetEmail(String email) async {
     try {
-      await _client.auth.resetPasswordForEmail(email);
+      await _client.auth.resetPasswordForEmail(
+        email,
+        redirectTo: 'com.flutterauthboilerplate://reset-password',
+      );
     } catch (e) {
       rethrow;
     }
@@ -163,7 +192,8 @@ class SupabaseAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<User> updateProfile({String? name, String? bio, String? imagePath}) async {
+  Future<User> updateProfile(
+      {String? name, String? bio, String? imagePath}) async {
     try {
       final user = _client.auth.currentUser;
       if (user == null) {
@@ -175,7 +205,8 @@ class SupabaseAuthDataSource implements AuthDataSource {
       if (bio != null) updateData['bio'] = bio;
 
       if (imagePath != null) {
-        final uploadedPhotoUrl = await _uploadProfileImage(userId: user.id, imagePath: imagePath);
+        final uploadedPhotoUrl =
+            await _uploadProfileImage(userId: user.id, imagePath: imagePath);
         updateData['photo_url'] = uploadedPhotoUrl;
       }
 
@@ -189,7 +220,8 @@ class SupabaseAuthDataSource implements AuthDataSource {
     }
   }
 
-  Future<String> _uploadProfileImage({required String userId, required String imagePath}) async {
+  Future<String> _uploadProfileImage(
+      {required String userId, required String imagePath}) async {
     final imageFile = File(imagePath);
     final fileName = 'profile_${DateTime.now().millisecondsSinceEpoch}.jpg';
     final path = 'avatars/$userId/$fileName';
