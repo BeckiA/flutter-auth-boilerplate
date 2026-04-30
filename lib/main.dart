@@ -14,14 +14,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final sh = await SharedPreferences.getInstance();
 
-  // --- ADD THIS TEMPORARILY ---
-  const storage = SecureStorageService();
-  await storage.saveSupabaseConfig(
-    url: 'https://pqkqtrqitkxahlswsnhs.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBxa3F0cnFpdGt4YWhsc3dzbmhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NTgwMTEsImV4cCI6MjA5MzAzNDAxMX0.Ovmwy1Jdq2MoOiJEM0xpznkLYyVZ2MzFGlLhzwZ_wqo',
-  );
-
   await _initializeSupabase();
   await GoogleSignIn.instance.initialize();
 
